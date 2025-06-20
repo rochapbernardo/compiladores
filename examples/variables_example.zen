@@ -1,0 +1,5 @@
+func main(){
+    int x = 10
+    float y = 3.14
+    str message = "Hello"
+}

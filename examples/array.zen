@@ -1,4 +1,0 @@
-func vetores(){
-    int[] quant_pessoas
-    str[2] nomes = {"José", "João"}
-} 
