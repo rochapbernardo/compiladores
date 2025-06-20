@@ -1,0 +1,54 @@
+%import common.WS
+%import common.SH_COMMENT
+%ignore WS
+%declare _INDENT _DEDENT
+
+program: (_NL*(function | statements))*
+
+function: "func" ID "(" parameters? ")" ("->" type)? "{" _NL* _INDENT statements* _DEDENT "}"
+parameters: parameter ("," parameter)*
+parameter: type ID
+
+statements: (_NL* (declarations | expression | structures | return) _NL*)
+variable: type ID ("=" log_expr)?
+expression: ID ("=" log_expr)?
+structures: struct
+array: type "[" LITERAL_INT "]" ID "=" "{" array_list? "}"
+array_list: literal ("," literal)*
+return: "return" log_expr
+declarations: variable | array
+
+struct: struct_cond | struct_rep
+struct_rep: for | while
+for: "for" "(" variable ";" log_expr+ ";" (increm_decrem | expr) ")" "{" _NL* _INDENT statements+ _DEDENT "}"
+while: "while" "(" log_expr+ ")" "{" _NL* _INDENT statements+ _DEDENT "}"
+struct_cond: "if" "(" log_expr+ ")" "{" _NL* _INDENT statements+ _DEDENT "}" elif* else?
+elif: "elif" "(" log_expr+ ")" "{" _NL* _INDENT statements+ _DEDENT "}"
+else: "else" "{" _NL* _INDENT statements* _DEDENT "}"
+
+increm_decrem: ID "++" | ID "--"
+
+log_expr: log_expr "||" rel_expr | log_expr "&&" rel_expr | log_expr "!" rel_expr | rel_expr
+rel_expr: rel_expr "<" expr | rel_expr "<=" expr | rel_expr ">" expr | rel_expr ">=" expr | rel_expr "==" expr | rel_expr "<>" expr | expr
+expr: expr "+" term | expr "-" term | term
+term: term "*" factor | term "/" factor | term "%" factor | factor
+factor: value
+
+value: ID | literal | increm_decrem
+
+literal: LITERAL_INT | LITERAL_FLOAT | LITERAL_CHAR | LITERAL_BOOLEAN | LITERAL_STRING
+LITERAL_INT: /-?[0-9]+/
+LITERAL_FLOAT: "-"? LITERAL_INT "." LITERAL_INT
+LITERAL_CHAR: /'.'/
+LITERAL_BOOLEAN: "0" | "1"
+LITERAL_STRING: /"([^"\\]|\\.)*"/
+
+type: TYPE_INT | TYPE_FLOAT | TYPE_CHAR | TYPE_BOOLEAN | TYPE_STRING
+TYPE_INT: "int"
+TYPE_FLOAT: "float"
+TYPE_CHAR: "char"
+TYPE_BOOLEAN: "bool"
+TYPE_STRING: "str"
+
+ID : /[a-zA-Z_][a-zA-Z_0-9]*/
+_NL: (/\r?\n[\t ]*/ | SH_COMMENT)+
