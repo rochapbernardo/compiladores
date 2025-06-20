@@ -1,0 +1,9 @@
+func verificarIdade(int idade) -> bool {
+    if (idade >= 18) {
+        return 1
+    } elif (idade >= 16) {
+        return 0
+    } else {
+        return 0
+    }
+} 
