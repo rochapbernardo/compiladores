@@ -1,0 +1,4 @@
+func main(int a)-> int{
+    int x = 10
+    return x
+}

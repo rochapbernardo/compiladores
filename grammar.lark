@@ -6,8 +6,9 @@
 program: function+
 block: _NL* _INDENT statements+ _NL* _DEDENT
 
-function: "func" ID "(" parameters_def? ")" ("->" type)? "{" block "}"
-parameters_def: parameter_def ("," parameter_def)*
+function: "func" ID parameters_def ("->" type)? "{" block "}"
+parameters_def: "(" parameters_def_list? ")"
+parameters_def_list: parameter_def ("," parameter_def)*
 parameter_def: type ID
 
 function_call: ID "(" parameters ")"
