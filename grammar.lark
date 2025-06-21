@@ -1,10 +1,10 @@
 %import common.WS
 %import common.SH_COMMENT
 %ignore WS
-%declare _INDENT _DEDENT
 
 program: function+
-block: _NL* _INDENT statements+ _NL* _DEDENT
+
+block: statements*
 
 function: "func" ID parameters_def ("->" type)? "{" block "}"
 parameters_def: "(" parameters_def_list? ")"
@@ -26,10 +26,10 @@ declarations: variable | array
 
 struct: struct_cond | struct_rep
 struct_rep: for | while
-for: "for" "(" variable ";" log_expr+ ";" (increm_decrem | expr) ")" "{" block "}"
-while: "while" "(" log_expr+ ")" "{" block "}"
-struct_cond: "if" "(" log_expr+ ")" "{" block "}" elif* else?
-elif: "elif" "(" log_expr+ ")" "{" block "}"
+for: "for" "(" variable ";" log_expr ";" (increm_decrem | expr) ")" "{" block "}"
+while: "while" "(" log_expr ")" "{" block "}"
+struct_cond: "if" "(" log_expr ")" "{" block "}" elif* else?
+elif: "elif" "(" log_expr ")" "{" block "}"
 else: "else" "{" block "}"
 
 increm_decrem: ID "++" | ID "--"
