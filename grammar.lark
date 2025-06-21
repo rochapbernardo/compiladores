@@ -1,10 +1,12 @@
 %import common.WS
 %import common.SH_COMMENT
 %ignore WS
+%declare _INDENT _DEDENT
 
 program: function+
 
 block: statements*
+suite: _NL _INDENT statements+ _DEDENT
 
 function: "func" ID parameters_def ("->" type)? "{" block "}"
 parameters_def: "(" parameters_def_list? ")"
