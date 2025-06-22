@@ -53,7 +53,7 @@ class Compiler:
     # metodo para gerar a imagem da arvore
     def tree_to_png(self, code, img_path="code.png"):
         ast = self.parse(code)
-        tree.pydot__tree_to_png(ast, "code.png")
+        tree.pydot__tree_to_png(ast, img_path)
 
     # metodo para gerar o codigo em C
     def transpile(self, code, c_path="code.c"):
