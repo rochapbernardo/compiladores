@@ -29,8 +29,8 @@ class CodeTranspiler(Interpreter):
             "TYPE_INT": "int",
             "TYPE_FLOAT": "float",
             "TYPE_VOID": "void",
-            "TYPE_BOOL": "bool",
-            "TYPE_STR": "char*",
+            "TYPE_BOOLEAN": "bool",
+            "TYPE_STRING": "char*",
         }
         if type_token.type in type_map:
             return type_map[type_token.type]
