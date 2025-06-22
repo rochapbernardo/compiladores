@@ -18,9 +18,9 @@ class CodeTranspiler(Interpreter):
 
     def emit_import(self, module: str) -> None:
         """Appends transpiled import statements to self.imports"""
-        # TODO: verificar se já não existe
         import_statement = f"#include <{module}>"
-        self.imports.append(import_statement)
+        if import_statement not in self.imports:
+            self.imports.append(import_statement)
 
     def type(self, tree):
         """Processes a type node and returns the C equivalent as a string."""
