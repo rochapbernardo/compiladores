@@ -72,6 +72,14 @@ class CodeTranspiler(Interpreter):
         """Visitor for a block of statements."""
         self.visit_children(tree)
 
+    def __default__(self, tree):
+        """
+        Default visitor for any node that doesn't have a specific method.
+        This will help us see the structure of the AST.
+        """
+        print(f"DEBUG: Visiting unhandled node -> {tree.data}")
+        return self.visit_children(tree)
+
     # Início
     # self.visit(ast) chama este método
     def program(self, tree) -> None:
