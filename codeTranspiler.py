@@ -68,6 +68,9 @@ class CodeTranspiler(Interpreter):
         return ""
 
 
+    def block(self, tree) -> None:
+        """Visitor for a block of statements."""
+        self.visit_children(tree)
 
     # Início
     # self.visit(ast) chama este método
