@@ -61,8 +61,26 @@ class CodeTranspiler(Interpreter):
         self.emit_import("stdio.h")
         self.visit_children(tree)
 
+    def parameter_def(self, tree):
+        """Processes a single parameter definition (e.g., 'int a')."""
+        # Based on your AST: children are [type_tree, ID_token]
+        c_type = self.visit(tree.children[0])
+        param_name = tree.children[1].value
+        return f"{c_type} {param_name}"
 
+    def parameters_def_list(self, tree):
+        """Processes a list of parameter definitions."""
+        # Visit each 'parameter_def' child and collect the results
+        param_list = [self.visit(child) for child in tree.children]
+        # Join them into a single string: "int a, float b"
+        return ", ".join(param_list)
 
+    def parameters_def(self, tree):
+        """Processes the main parameter block."""
+        # If there are parameters, visit the list. Otherwise, return an empty string.
+        if tree.children:
+            return self.visit(tree.children[0])
+        return ""
 
 
 
