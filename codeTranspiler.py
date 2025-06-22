@@ -8,12 +8,12 @@ class CodeTranspiler(Interpreter):
         self.imports = []
         self.indent_level = 0
 
-    
-    #funcao para emitir texto dentro do output
-    def emit(self, line):
-        #calcular o identacao
-        ident = '    ' * self.indent_level
-        self.output.append(f"{ident}{line}")
+    def emit_code(self, line, indent=True):
+        if indent:
+            indent_str = "    " * self.indent_level
+            self.output.append(f"{indent_str}{line}")
+        else:
+            self.output.append(line)
 
     def program(self, tree):
         self.emit("#include <stdio.h>\n")
