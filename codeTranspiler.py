@@ -15,9 +15,6 @@ class CodeTranspiler(Interpreter):
         else:
             self.output.append(line)
 
-    def program(self, tree):
-        self.emit("#include <stdio.h>\n")
-        self.visit_children(tree)
     def emit_import(self, module: str) -> None:
         """Adds import modules."""
         # TODO: verificar se já não existe
@@ -41,6 +38,12 @@ class CodeTranspiler(Interpreter):
 
         self.indent_level -= 1
         self.emit(f"}}")
+    # Início
+    # self.visit(ast) chama este método
+    def program(self, tree) -> None:
+        """Visitor for the top-level program rule."""
+        self.emit_import("stdio.h")
+        self.visit_children(tree)
 
         #print(parameters)
         #exit(0)
