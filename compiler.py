@@ -1,6 +1,6 @@
 from typing import List
 
-from lark import Lark, UnexpectedInput, tree
+from lark import Lark, tree
 from lark.indenter import Indenter
 
 from codeTranspiler import CodeTranspiler
