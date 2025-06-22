@@ -41,7 +41,6 @@ class CodeTranspiler(Interpreter):
         Visitor for a logical expression.
         For now, it passes through to the relational expression.
         """
-        # This can be expanded to handle logical operators like '&&' and '||'
         return self.visit(tree.children[0])
 
     def rel_expr(self, tree):
@@ -49,7 +48,6 @@ class CodeTranspiler(Interpreter):
         Visitor for a relational expression.
         For now, it passes through to the arithmetic expression.
         """
-        # This can be expanded to handle operators like '>', '<', '=='
         return self.visit(tree.children[0])
 
     def expr(self, tree):
@@ -57,7 +55,6 @@ class CodeTranspiler(Interpreter):
         Visitor for an arithmetic expression (addition/subtraction).
         For now, it passes through to the term.
         """
-        # This can be expanded to handle '+' and '-'
         return self.visit(tree.children[0])
 
     def term(self, tree):
@@ -65,7 +62,6 @@ class CodeTranspiler(Interpreter):
         Visitor for a term in an expression (multiplication/division).
         For now, it passes through to the factor.
         """
-        # This can be expanded to handle '*' and '/'
         return self.visit(tree.children[0])
 
     def factor(self, tree):
@@ -77,32 +73,22 @@ class CodeTranspiler(Interpreter):
         Visitor for a value, which can be a literal, an identifier, or another expression.
         """
         child = tree.children[0]
-
-        # First, check if the child is a Token.
         if isinstance(child, Token):
-            # If it is any kind of Token (e.g., an identifier), return its string value.
             return child.value
         else:
-            # If the child is not a Token, we can assume it's a Tree.
-            # It is now safe to visit the child node to continue the transpilation.
             return self.visit(child)
 
     def literal(self, tree):
         """Visitor for a literal value (int, float, string)."""
         literal_token = tree.children[0]
-        # The token's value is already the C representation of the literal
         return literal_token.value
 
-    # Add this method to your CodeTranspiler class
     def array_list(self, tree):
         """
         Processes a list of literals for array initialization.
         e.g., {"José", "João", "Maria"}
         """
-        # Visit each child (which are 'literal' nodes) to get its C representation
         values = [self.visit(child) for child in tree.children]
-
-        # Return the C-formatted, comma-separated list of values
         return ", ".join(values)
 
     def array(self, tree: Tree):
@@ -111,12 +97,10 @@ class CodeTranspiler(Interpreter):
         If an array is declared without a size or initializer,
         it defaults to a size of 10.
         """
-        # Find the type, name, size, and initializer list from the AST
         c_type = self.visit(tree.children[0])
         array_size = None
         var_name = None
         initial_values = None
-
         for child in tree.children[1:]:
             if isinstance(child, Token):
                 if child.type == "ID":
@@ -125,21 +109,13 @@ class CodeTranspiler(Interpreter):
                     array_size = child.value
             elif isinstance(child, Tree) and child.data == "array_list":
                 initial_values = self.visit(child)
-
-        # --- Logic to generate the correct C code ---
-
-        # Case 1: An initializer list is provided.
         if initial_values:
             size_str = array_size if array_size is not None else ""
             self._emit_code(
                 f"{c_type} {var_name}[{size_str}] = {{ {initial_values} }};"
             )
-
-        # Case 2: No initializer list, but an explicit size is given.
         elif array_size is not None:
             self._emit_code(f"{c_type} {var_name}[{array_size}];")
-
-        # Case 3: No initializer AND no size. Apply the default size of 10.
         else:
             default_size = 10
             self._emit_code(f"{c_type} {var_name}[{default_size}];")
@@ -163,7 +139,6 @@ class CodeTranspiler(Interpreter):
 
     def declarations(self, tree):
         """Visitor for the 'declarations' rule."""
-        # This rule likely wraps specific declaration types, so we visit its children.
         self.visit_children(tree)
 
     def variable(self, tree):
