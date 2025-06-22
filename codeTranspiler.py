@@ -1,3 +1,5 @@
+from lark.lexer import Token
+from lark.tree import Tree
 from lark.visitors import Interpreter
 
 
@@ -7,6 +9,14 @@ class CodeTranspiler(Interpreter):
         self.output = []
         self.imports = []
         self.indent_level = 0
+
+    def __default__(self, tree):
+        """
+        Default visitor for any node that doesn't have a specific method.
+        This will help us see the structure of the AST.
+        """
+        print(f"DEBUG: Visiting unhandled node -> {tree.data}")
+        return self.visit_children(tree)
 
     def type(self, tree):
         """Processes a type node and returns the C equivalent as a string."""
@@ -26,6 +36,113 @@ class CodeTranspiler(Interpreter):
             return type_map[type_token.value]
         return "/* unknown type */"
 
+    def log_expr(self, tree):
+        """
+        Visitor for a logical expression.
+        For now, it passes through to the relational expression.
+        """
+        # This can be expanded to handle logical operators like '&&' and '||'
+        return self.visit(tree.children[0])
+
+    def rel_expr(self, tree):
+        """
+        Visitor for a relational expression.
+        For now, it passes through to the arithmetic expression.
+        """
+        # This can be expanded to handle operators like '>', '<', '=='
+        return self.visit(tree.children[0])
+
+    def expr(self, tree):
+        """
+        Visitor for an arithmetic expression (addition/subtraction).
+        For now, it passes through to the term.
+        """
+        # This can be expanded to handle '+' and '-'
+        return self.visit(tree.children[0])
+
+    def term(self, tree):
+        """
+        Visitor for a term in an expression (multiplication/division).
+        For now, it passes through to the factor.
+        """
+        # This can be expanded to handle '*' and '/'
+        return self.visit(tree.children[0])
+
+    def factor(self, tree):
+        """Visitor for a factor. Passes through to the actual value."""
+        return self.visit(tree.children[0])
+
+    def value(self, tree):
+        """
+        Visitor for a value, which can be a literal, an identifier, or another expression.
+        """
+        child = tree.children[0]
+
+        # First, check if the child is a Token.
+        if isinstance(child, Token):
+            # If it is any kind of Token (e.g., an identifier), return its string value.
+            return child.value
+        else:
+            # If the child is not a Token, we can assume it's a Tree.
+            # It is now safe to visit the child node to continue the transpilation.
+            return self.visit(child)
+
+    def literal(self, tree):
+        """Visitor for a literal value (int, float, string)."""
+        literal_token = tree.children[0]
+        # The token's value is already the C representation of the literal
+        return literal_token.value
+
+    # Add this method to your CodeTranspiler class
+    def array_list(self, tree):
+        """
+        Processes a list of literals for array initialization.
+        e.g., {"José", "João", "Maria"}
+        """
+        # Visit each child (which are 'literal' nodes) to get its C representation
+        values = [self.visit(child) for child in tree.children]
+
+        # Return the C-formatted, comma-separated list of values
+        return ", ".join(values)
+
+    def array(self, tree: Tree):
+        """
+        Visitor for an array declaration.
+        If an array is declared without a size or initializer,
+        it defaults to a size of 10.
+        """
+        # Find the type, name, size, and initializer list from the AST
+        c_type = self.visit(tree.children[0])
+        array_size = None
+        var_name = None
+        initial_values = None
+
+        for child in tree.children[1:]:
+            if isinstance(child, Token):
+                if child.type == "ID":
+                    var_name = child.value
+                elif child.type == "LITERAL_INT":
+                    array_size = child.value
+            elif isinstance(child, Tree) and child.data == "array_list":
+                initial_values = self.visit(child)
+
+        # --- Logic to generate the correct C code ---
+
+        # Case 1: An initializer list is provided.
+        if initial_values:
+            size_str = array_size if array_size is not None else ""
+            self._emit_code(
+                f"{c_type} {var_name}[{size_str}] = {{ {initial_values} }};"
+            )
+
+        # Case 2: No initializer list, but an explicit size is given.
+        elif array_size is not None:
+            self._emit_code(f"{c_type} {var_name}[{array_size}];")
+
+        # Case 3: No initializer AND no size. Apply the default size of 10.
+        else:
+            default_size = 10
+            self._emit_code(f"{c_type} {var_name}[{default_size}];")
 
     def parameter_def(self, tree):
         """Processes a single parameter definition (e.g., 'int a')."""
@@ -43,6 +160,30 @@ class CodeTranspiler(Interpreter):
         if tree.children:
             return self.visit(tree.children[0])
         return ""
+
+    def declarations(self, tree):
+        """Visitor for the 'declarations' rule."""
+        # This rule likely wraps specific declaration types, so we visit its children.
+        self.visit_children(tree)
+
+    def variable(self, tree):
+        """
+        Visitor for a variable declaration.
+        Handles both declaration-only and declaration with initialization.
+        AST rule: variable: type ID (log_expr)?
+        """
+        c_type = self.visit(tree.children[0])
+        var_name = tree.children[1].value
+
+        # Check if there is an initial value assigned
+        if len(tree.children) > 2:
+            initial_value = self.visit(tree.children[2])
+            self._emit_code(
+                f"{'const ' if c_type == 'char*' else ''}{c_type} {var_name} = {initial_value};"
+            )
+        else:
+            # If no initial value, just emit the declaration
+            self._emit_code(f"{c_type} {var_name};")
 
     def function(self, tree) -> None:
         """
@@ -69,13 +210,12 @@ class CodeTranspiler(Interpreter):
         """Visitor for a block of statements."""
         self.visit_children(tree)
 
-    def __default__(self, tree):
-        """
-        Default visitor for any node that doesn't have a specific method.
-        This will help us see the structure of the AST.
-        """
-        print(f"DEBUG: Visiting unhandled node -> {tree.data}")
-        return self.visit_children(tree)
+    # Início
+    # self.visit(ast) chama este método
+    def program(self, tree) -> None:
+        """Visitor for the top-level program rule."""
+        self._emit_import("stdio.h")
+        self.visit_children(tree)
 
     def _emit_code(self, line, indent=True):
         """Appends transpiled code to self.output"""
@@ -102,13 +242,6 @@ class CodeTranspiler(Interpreter):
             "str": "char*",
         }
         return type_map.get(type_name, "/* unknown type */")
-
-    # Início
-    # self.visit(ast) chama este método
-    def _program(self, tree) -> None:
-        """Visitor for the top-level program rule."""
-        self._emit_import("stdio.h")
-        self.visit_children(tree)
 
     def _transpile(self, ast):
         """Starts the transpilation process."""
