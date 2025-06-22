@@ -14,7 +14,7 @@ parameter_def: type ID
 function_call: ID "(" parameters ")"
 parameters: log_expr ("," log_expr)*
 
-statements: _NL*(function | function_call | structures | declarations | assign_expr | function_call | return) _NL*
+statements: _NL*(function | structures | declarations | assign_expr | function_call | return) _NL*
 variable: type ID ("=" log_expr)?
 expression: assign_expr | value
 assign_expr: ID "=" log_expr

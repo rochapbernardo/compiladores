@@ -37,11 +37,18 @@ class CodeTranspiler(Interpreter):
         for blocks in block:
             self.visit_children(blocks)
 
-        print(name)
         print(parameters)
-        print(fn_type)
-        print(block)
+
         exit(0)
+
+    def parameters_def_list(self, tree):
+        return self.visit_children(tree)
+    
+    def parameter_def(self, tree):
+        return {
+            'type': self.visit_children(tree.children[0])[0].value,
+            'id': tree.children[1].value
+        }
 
     def type(self, tree):
         return tree.children[0].value
