@@ -120,6 +120,22 @@ class CodeTranspiler(Interpreter):
             default_size = 10
             self._emit_code(f"{c_type} {var_name}[{default_size}];")
 
+    def variable(self, tree):
+        """
+        Visitor for a variable declaration.
+        Handles both declaration-only and declaration with initialization.
+        AST rule: variable: type ID (log_expr)?
+        """
+        c_type = self.visit(tree.children[0])
+        var_name = tree.children[1].value
+        if len(tree.children) > 2:
+            initial_value = self.visit(tree.children[2])
+            self._emit_code(
+                f"{'const ' if c_type == 'char*' else ''}{c_type} {var_name} = {initial_value};"
+            )
+        else:
+            self._emit_code(f"{c_type} {var_name};")
+
     def parameter_def(self, tree):
         """Processes a single parameter definition (e.g., 'int a')."""
         c_type = self.visit(tree.children[0])
@@ -140,25 +156,6 @@ class CodeTranspiler(Interpreter):
     def declarations(self, tree):
         """Visitor for the 'declarations' rule."""
         self.visit_children(tree)
-
-    def variable(self, tree):
-        """
-        Visitor for a variable declaration.
-        Handles both declaration-only and declaration with initialization.
-        AST rule: variable: type ID (log_expr)?
-        """
-        c_type = self.visit(tree.children[0])
-        var_name = tree.children[1].value
-
-        # Check if there is an initial value assigned
-        if len(tree.children) > 2:
-            initial_value = self.visit(tree.children[2])
-            self._emit_code(
-                f"{'const ' if c_type == 'char*' else ''}{c_type} {var_name} = {initial_value};"
-            )
-        else:
-            # If no initial value, just emit the declaration
-            self._emit_code(f"{c_type} {var_name};")
 
     def function(self, tree) -> None:
         """
