@@ -18,6 +18,11 @@ class CodeTranspiler(Interpreter):
     def program(self, tree):
         self.emit("#include <stdio.h>\n")
         self.visit_children(tree)
+    def emit_import(self, module: str) -> None:
+        """Adds import modules."""
+        # TODO: verificar se já não existe
+        import_statement = f"#include <{module}>"
+        self.imports.append(import_statement)
 
     def function(self, tree):
         name, parameters, fn_type, *block = tree.children
