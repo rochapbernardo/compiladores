@@ -1,21 +1,13 @@
-#visitar os nos da arvore, Interpreter para visitar a arvore top-down
 from lark.visitors import Interpreter
+
 
 class CodeTranspiler(Interpreter):
     def __init__(self):
         super().__init__()
-
-        #guardar as strings das linhas geradas
         self.output = []
-
-        #para poder identar o codigo em C
+        self.imports = []
         self.indent_level = 0
 
-        #salvar as variaveis e funcoes
-        self.globals = {
-            'variables':{},
-            'functions':{}
-        }
     
     #funcao para emitir texto dentro do output
     def emit(self, line):
