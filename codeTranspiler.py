@@ -32,6 +32,8 @@ class CodeTranspiler(Interpreter):
             "TYPE_BOOLEAN": "bool",
             "TYPE_STRING": "char*",
         }
+        if type_map[type_token.type] == "bool":
+            self.emit_import("stdbool.h")
         if type_token.type in type_map:
             return type_map[type_token.type]
         elif type_token.value in type_map:
