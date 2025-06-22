@@ -27,6 +27,10 @@ class CodeTranspiler(Interpreter):
         name = name.value
         parameters = self.visit_children(parameters)[0]
         fn_type = self.visit_children(fn_type)[0]
+    def transpile(self, ast):
+        """Starts the transpilation process."""
+        self.visit(ast)
+        return f"{'\n'.join(self.imports)}\n\n{'\n'.join(self.output)}"
 
         #emit function
         self.emit(f"{fn_type} {name}({self.parameters_to_str(parameters)}) {{")
@@ -70,8 +74,3 @@ class CodeTranspiler(Interpreter):
     def type(self, tree):
         return tree.children[0].value
 
-    #metodo para retornar a lista
-    def transpile(self, ast):
-        #visitar os nos
-        self.visit(ast)
-        return "\n".join(self.output)
