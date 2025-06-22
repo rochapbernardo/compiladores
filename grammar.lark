@@ -3,7 +3,7 @@
 %ignore WS
 %declare _INDENT _DEDENT
 
-program: function+ 
+program: (_NL | function)*
 block: _NL* _INDENT statements+ _NL* _DEDENT
 
 function: "func" ID parameters_def ("->" type)? "{" block "}"
