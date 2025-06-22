@@ -83,7 +83,11 @@ class CodeTranspiler(Interpreter):
         )
         _params = f"({self.visit(token_function_params)})"
         _block = f"{{ {'process_block'} }}"
-        self.emit_code(_signature + _params)
+        self.emit_code(_signature + _params + " {")
+        self.indent_level += 1
+        self.visit(token_function_return_block)
+        self.indent_level -= 1
+        self.emit_code("}")
 
     def block(self, tree) -> None:
         """Visitor for a block of statements."""
