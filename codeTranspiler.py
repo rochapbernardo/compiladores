@@ -8,20 +8,6 @@ class CodeTranspiler(Interpreter):
         self.imports = []
         self.indent_level = 0
 
-    def emit_code(self, line, indent=True):
-        """Appends transpiled code to self.output"""
-        if indent:
-            indent_str = "    " * self.indent_level
-            self.output.append(f"{indent_str}{line}")
-        else:
-            self.output.append(line)
-
-    def emit_import(self, module: str) -> None:
-        """Appends transpiled import statements to self.imports"""
-        import_statement = f"#include <{module}>"
-        if import_statement not in self.imports:
-            self.imports.append(import_statement)
-
     def type(self, tree):
         """Processes a type node and returns the C equivalent as a string."""
         type_token = tree.children[0]
@@ -33,24 +19,13 @@ class CodeTranspiler(Interpreter):
             "TYPE_STRING": "char*",
         }
         if type_map[type_token.type] == "bool":
-            self.emit_import("stdbool.h")
+            self._emit_import("stdbool.h")
         if type_token.type in type_map:
             return type_map[type_token.type]
         elif type_token.value in type_map:
             return type_map[type_token.value]
         return "/* unknown type */"
 
-    def _map_type(self, type_node):
-        """Maps custom language types to C types."""
-        type_name = type_node.children[0].value
-        type_map = {
-            "void": "void",
-            "int": "int",
-            "float": "float",
-            "bool": "bool",
-            "str": "char*",
-        }
-        return type_map.get(type_name, "/* unknown type */")
 
     def parameter_def(self, tree):
         """Processes a single parameter definition (e.g., 'int a')."""
@@ -82,13 +57,13 @@ class CodeTranspiler(Interpreter):
         return_type = self._map_type(token_function_return_type)
         _signature = f"{'int' if return_type == 'void' else return_type} {token_function_name.value}"
         _params = f"({self.visit(token_function_params)})"
-        self.emit_code(_signature + _params + " {")
+        self._emit_code(_signature + _params + " {")
         self.indent_level += 1
         self.visit(token_function_return_block)
         if return_type == "void":
-            self.emit_code("return 0")
+            self._emit_code("return 0")
         self.indent_level -= 1
-        self.emit_code("}")
+        self._emit_code("}")
 
     def block(self, tree) -> None:
         """Visitor for a block of statements."""
@@ -102,14 +77,40 @@ class CodeTranspiler(Interpreter):
         print(f"DEBUG: Visiting unhandled node -> {tree.data}")
         return self.visit_children(tree)
 
+    def _emit_code(self, line, indent=True):
+        """Appends transpiled code to self.output"""
+        if indent:
+            indent_str = "    " * self.indent_level
+            self.output.append(f"{indent_str}{line}")
+        else:
+            self.output.append(line)
+
+    def _emit_import(self, module: str) -> None:
+        """Appends transpiled import statements to self.imports"""
+        import_statement = f"#include <{module}>"
+        if import_statement not in self.imports:
+            self.imports.append(import_statement)
+
+    def _map_type(self, type_node):
+        """Maps custom language types to C types."""
+        type_name = type_node.children[0].value
+        type_map = {
+            "void": "void",
+            "int": "int",
+            "float": "float",
+            "bool": "bool",
+            "str": "char*",
+        }
+        return type_map.get(type_name, "/* unknown type */")
+
     # Início
     # self.visit(ast) chama este método
-    def program(self, tree) -> None:
+    def _program(self, tree) -> None:
         """Visitor for the top-level program rule."""
-        self.emit_import("stdio.h")
+        self._emit_import("stdio.h")
         self.visit_children(tree)
 
-    def transpile(self, ast):
+    def _transpile(self, ast):
         """Starts the transpilation process."""
         self.visit(ast)
         return f"{'\n'.join(self.imports)}\n\n{'\n'.join(self.output)}"
