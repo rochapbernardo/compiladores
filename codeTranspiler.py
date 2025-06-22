@@ -77,7 +77,6 @@ class CodeTranspiler(Interpreter):
         token_function_params = tree.children[1]
         token_function_return_type = tree.children[2]
         token_function_return_block = tree.children[3]
-
         _signature = (
             f"{self._map_type(token_function_return_type)} {token_function_name}"
         )
