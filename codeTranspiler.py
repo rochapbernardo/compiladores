@@ -82,7 +82,6 @@ class CodeTranspiler(Interpreter):
             f"{self._map_type(token_function_return_type)} {token_function_name}"
         )
         _params = f"({self.visit(token_function_params)})"
-        _block = f"{{ {'process_block'} }}"
         self.emit_code(_signature + _params + " {")
         self.indent_level += 1
         self.visit(token_function_return_block)
