@@ -77,13 +77,14 @@ class CodeTranspiler(Interpreter):
         token_function_params = tree.children[1]
         token_function_return_type = tree.children[2]
         token_function_return_block = tree.children[3]
-        _signature = (
-            f"{self._map_type(token_function_return_type)} {token_function_name}"
-        )
+        return_type = self._map_type(token_function_return_type)
+        _signature = f"{'int' if return_type == 'void' else return_type} {token_function_name.value}"
         _params = f"({self.visit(token_function_params)})"
         self.emit_code(_signature + _params + " {")
         self.indent_level += 1
         self.visit(token_function_return_block)
+        if return_type == "void":
+            self.emit_code("return 0")
         self.indent_level -= 1
         self.emit_code("}")
 
