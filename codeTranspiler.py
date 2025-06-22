@@ -67,6 +67,23 @@ class CodeTranspiler(Interpreter):
             return self.visit(tree.children[0])
         return ""
 
+    def function(self, tree) -> None:
+        """
+        Visitor for a function declaration.
+        Assumes a grammar rule like:
+        func_declaration: "func" CNAME "(" params? ")" "->" type block
+        """
+        token_function_name = tree.children[0]
+        token_function_params = tree.children[1]
+        token_function_return_type = tree.children[2]
+        token_function_return_block = tree.children[3]
+
+        _signature = (
+            f"{self._map_type(token_function_return_type)} {token_function_name}"
+        )
+        _params = f"({self.visit(token_function_params)})"
+        _block = f"{{ {'process_block'} }}"
+        self.emit_code(_signature + _params)
 
     def block(self, tree) -> None:
         """Visitor for a block of statements."""
