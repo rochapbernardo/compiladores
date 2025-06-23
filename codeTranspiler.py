@@ -177,6 +177,17 @@ class CodeTranspiler(Interpreter):
         """Visitor for the repetition structure wrapper rule (for, while)."""
         self.visit_children(tree)
 
+    def while_(self, tree):
+        """Visitor for a while loop."""
+        _condition = self.visit(tree.children[0])
+        _block = tree.children[1]
+        _signature = f"while ({_condition})"
+        self._emit_code(_signature + " {")
+        self.indent_level += 1
+        self.visit(_block)
+        self.indent_level -= 1
+        self._emit_code("}")
+
     def for_(self, tree):
         """Visitor for a C-style for loop."""
         init_node = tree.children[0]
