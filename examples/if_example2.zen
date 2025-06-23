@@ -1,4 +1,4 @@
-func testeIf(){
+func testeIf() -> void {
     if (x > 10) {
         x = 10
     } else {

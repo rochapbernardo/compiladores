@@ -58,7 +58,7 @@ class Compiler:
     # metodo para gerar o codigo em C
     def transpile(self, code, c_path="code.c"):
         ast = self.parse(code)
-        transpiled_code = self.transpiler.transpile(ast)
+        transpiled_code = self.transpiler._transpile(ast)
         # gravar o codigo C em um arquivo
         with open(c_path, "w") as c_file:
             c_file.write(transpiled_code)

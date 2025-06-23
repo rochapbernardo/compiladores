@@ -14,30 +14,43 @@ parameter_def: type ID
 function_call: ID "(" parameters ")"
 parameters: log_expr ("," log_expr)*
 
-statements: _NL*(function | structures | declarations | assign_expr | function_call | return) _NL*
+statements: _NL*(function | structures | declarations | assign_expr | function_call | return_) _NL*
 variable: type ID ("=" log_expr)?
 expression: assign_expr | value
 assign_expr: ID "=" log_expr
 structures: struct
 array: type "[" LITERAL_INT? "]" ID ("=" "{" array_list "}")?
 array_list: literal ("," literal)*
-return: "return" log_expr
+return_: "return" log_expr
 declarations: variable | array
 
 struct: struct_cond | struct_rep
-struct_rep: for | while
-for: "for" "(" variable ";" log_expr+ ";" (increm_decrem | expr) ")" "{" block "}"
-while: "while" "(" log_expr+ ")" "{" block "}"
-struct_cond: "if" "(" log_expr+ ")" "{" block "}" elif* else?
-elif: "elif" "(" log_expr+ ")" "{" block "}"
-else: "else" "{" block "}"
+struct_rep: for_ | while_
+for_: "for" "(" variable ";" log_expr+ ";" (increm_decrem | expr) ")" "{" block "}"
+while_: "while" "(" log_expr+ ")" "{" block "}"
+struct_cond: "if" "(" log_expr+ ")" "{" block "}" elif_* else_?
+elif_: "elif" "(" log_expr+ ")" "{" block "}"
+else_: "else" "{" block "}"
 
 increm_decrem: ID "++" | ID "--"
 
-log_expr: log_expr "||" rel_expr | log_expr "&&" rel_expr | log_expr "!" rel_expr | rel_expr
-rel_expr: rel_expr "<" expr | rel_expr "<=" expr | rel_expr ">" expr | rel_expr ">=" expr | rel_expr "==" expr | rel_expr "<>" expr | expr
-expr: expr "+" term | expr "-" term | term
-term: term "*" factor | term "/" factor | term "%" factor | factor
+EQ: "=="
+NEQ: "!=" | "<>"
+GT: ">"
+GTE: ">="
+LT: "<"
+LTE: "<="
+PLUS: "+"
+MINUS: "-"
+STAR: "*"
+SLASH: "/"
+PERCENT: "%"
+
+rel_expr: expr (EQ | NEQ | GT | GTE | LT | LTE) expr | expr
+log_expr: rel_expr ("&&" | "||") rel_expr | rel_expr
+expr: term (PLUS | MINUS) term | term
+term: factor (STAR | SLASH | PERCENT) factor | factor
+
 factor: value | "(" log_expr ")"
 
 value: ID | literal | increm_decrem
@@ -46,7 +59,7 @@ literal: LITERAL_INT | LITERAL_FLOAT | LITERAL_CHAR | LITERAL_BOOLEAN | LITERAL_
 LITERAL_INT: /-?[0-9]+/
 LITERAL_FLOAT: "-"? LITERAL_INT "." LITERAL_INT
 LITERAL_CHAR: /'.'/
-LITERAL_BOOLEAN: "0" | "1"
+LITERAL_BOOLEAN: "true" | "false"
 LITERAL_STRING: /"([^"\\]|\\.)*"/
 
 type: TYPE_INT | TYPE_FLOAT | TYPE_CHAR | TYPE_BOOLEAN | TYPE_STRING | TYPE_VOID
