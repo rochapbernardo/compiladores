@@ -18,6 +18,10 @@ class CodeTranspiler(Interpreter):
         print(f"DEBUG: Visiting unhandled node -> {tree.data}")
         return self.visit_children(tree)
 
+    def statements(self, tree):
+        """Visitor for a statements block."""
+        self.visit_children(tree)
+
     def type(self, tree):
         """Processes a type node and returns the C equivalent as a string."""
         type_token = tree.children[0]
