@@ -1,4 +1,7 @@
-func main(int a, float b)-> void {
+func main()-> void {
+  func teste(int a) -> int {
+    return a
+  }
   float y = 3.14
   str message = "Hello"
   bool test = true
@@ -8,6 +11,7 @@ func main(int a, float b)-> void {
   str[3] nomes = {"José", "João", "Maria"}
   int idade = 10
   int x = 3
+  teste(1)
   if (idade != 18) {
     return true
   } elif (idade >= 16) {
