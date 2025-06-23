@@ -61,7 +61,6 @@ class CodeTranspiler(Interpreter):
             right = self.visit(tree.children[2])
             op_map = {"<>": "!="}
             c_op = op_map.get(op, op)
-            print(left, op, right, op_map, c_op)
             return f"{left} {c_op} {right}"
         return self.visit(tree.children[0])
 
