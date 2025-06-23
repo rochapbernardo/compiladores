@@ -290,7 +290,7 @@ class CodeTranspiler(Interpreter):
         self.indent_level += 1
         self.visit(token_function_return_block)
         if return_type == "void":
-            self._emit_code("return 0")
+            self._emit_code("return 0;")
         self.indent_level -= 1
         self._emit_code("}")
 
