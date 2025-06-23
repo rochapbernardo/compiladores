@@ -357,4 +357,8 @@ class CodeTranspiler(Interpreter):
     def _transpile(self, ast):
         """Starts the transpilation process."""
         self.visit(ast)
-        return f"{'\n'.join(self.imports)}\n\n{'\n'.join(self.main)}"
+        _imports = "\n".join(self.imports)
+        _main = "\n".join(self.main)
+        if len(self.imports) == 0:
+            return f"{_main}"
+        return f"{_imports}\n\n{_main}"
