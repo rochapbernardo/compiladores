@@ -154,6 +154,26 @@ class CodeTranspiler(Interpreter):
         self.indent_level -= 1
         self._emit_code("}")
 
+    def increm_decrem(self, tree):
+        """
+        Visitor for increment/decrement expressions (e.g., i++, i--).
+        Returns the expression as a string.
+        """
+        var_name = tree.children[0].value
+        operator = "++"
+        if len(tree.children) > 1:
+            operator = tree.children[1].value
+        return f"{var_name}{operator}"
+
+    def assign_expr(self, tree):
+        """
+        Visitor for an assignment statement.
+        e.g., x = x + i
+        """
+        var_name = tree.children[0].value
+        expression = self.visit(tree.children[1])
+        self._emit_code(f"{var_name} = {expression};")
+
     def struct_rep(self, tree):
         """Visitor for the repetition structure wrapper rule (for, while)."""
         self.visit_children(tree)
