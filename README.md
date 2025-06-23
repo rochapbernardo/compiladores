@@ -1,3 +1,12 @@
+# Uso
+
+```sh
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python main.py examples/main_example.zen --transpile --tree
+```
+
 # Divergências
 
 ## TreeIndenter
