@@ -34,10 +34,18 @@ else_: "else" "{" block "}"
 
 increm_decrem: ID "++" | ID "--"
 
-log_expr: log_expr "||" rel_expr | log_expr "&&" rel_expr | log_expr "!" rel_expr | rel_expr
-rel_expr: rel_expr "<" expr | rel_expr "<=" expr | rel_expr ">" expr | rel_expr ">=" expr | rel_expr "==" expr | rel_expr "<>" expr | expr
-expr: expr "+" term | expr "-" term | term
-term: term "*" factor | term "/" factor | term "%" factor | factor
+EQ: "=="
+NEQ: "!=" | "<>"
+GT: ">"
+GTE: ">="
+LT: "<"
+LTE: "<="
+
+rel_expr: expr (EQ | NEQ | GT | GTE | LT | LTE) expr | expr
+log_expr: rel_expr ("&&" | "||") rel_expr | rel_expr
+expr: term ("+" | "-") term | term
+term: factor ("*" | "/" | "%") factor | factor
+
 factor: value | "(" log_expr ")"
 
 value: ID | literal | increm_decrem
