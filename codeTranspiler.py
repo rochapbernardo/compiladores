@@ -43,30 +43,44 @@ class CodeTranspiler(Interpreter):
     def log_expr(self, tree):
         """
         Visitor for a logical expression.
-        For now, it passes through to the relational expression.
         """
+        if len(tree.children) > 1 and isinstance(tree.children[1], Token):
+            left = self.visit(tree.children[0])
+            op = tree.children[1].value
+            right = self.visit(tree.children[2])
+            return f"{left} {op} {right}"
         return self.visit(tree.children[0])
 
     def rel_expr(self, tree):
         """
         Visitor for a relational expression.
-        For now, it passes through to the arithmetic expression.
         """
+        if len(tree.children) > 1 and isinstance(tree.children[1], Token):
+            left = self.visit(tree.children[0])
+            op = tree.children[1].value
+            right = self.visit(tree.children[2])
+            op_map = {"<>": "!="}
+            c_op = op_map.get(op, op)
+            print(left, op, right, op_map, c_op)
+            return f"{left} {c_op} {right}"
         return self.visit(tree.children[0])
 
     def expr(self, tree):
         """
         Visitor for an arithmetic expression (addition/subtraction).
-        For now, it passes through to the term.
         """
+        if len(tree.children) > 1 and isinstance(tree.children[1], Token):
+            left = self.visit(tree.children[0])
+            op = tree.children[1].value
+            right = self.visit(tree.children[2])
+            return f"{left} {op} {right}"
         return self.visit(tree.children[0])
 
     def term(self, tree):
         """
         Visitor for a term in an expression (multiplication/division).
-        For now, it passes through to the factor.
         """
-        return self.visit(tree.children[0])
+        return self.expr(tree)
 
     def factor(self, tree):
         """Visitor for a factor. Passes through to the actual value."""
