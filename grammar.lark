@@ -40,11 +40,16 @@ GT: ">"
 GTE: ">="
 LT: "<"
 LTE: "<="
+PLUS: "+"
+MINUS: "-"
+STAR: "*"
+SLASH: "/"
+PERCENT: "%"
 
 rel_expr: expr (EQ | NEQ | GT | GTE | LT | LTE) expr | expr
 log_expr: rel_expr ("&&" | "||") rel_expr | rel_expr
-expr: term ("+" | "-") term | term
-term: factor ("*" | "/" | "%") factor | factor
+expr: term (PLUS | MINUS) term | term
+term: factor (STAR | SLASH | PERCENT) factor | factor
 
 factor: value | "(" log_expr ")"
 
