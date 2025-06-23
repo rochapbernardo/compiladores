@@ -14,23 +14,23 @@ parameter_def: type ID
 function_call: ID "(" parameters ")"
 parameters: log_expr ("," log_expr)*
 
-statements: _NL*(function | structures | declarations | assign_expr | function_call | return) _NL*
+statements: _NL*(function | structures | declarations | assign_expr | function_call | return_) _NL*
 variable: type ID ("=" log_expr)?
 expression: assign_expr | value
 assign_expr: ID "=" log_expr
 structures: struct
 array: type "[" LITERAL_INT? "]" ID ("=" "{" array_list "}")?
 array_list: literal ("," literal)*
-return: "return" log_expr
+return_: "return" log_expr
 declarations: variable | array
 
 struct: struct_cond | struct_rep
 struct_rep: for | while
 for: "for" "(" variable ";" log_expr+ ";" (increm_decrem | expr) ")" "{" block "}"
 while: "while" "(" log_expr+ ")" "{" block "}"
-struct_cond: "if" "(" log_expr+ ")" "{" block "}" elif* else?
-elif: "elif" "(" log_expr+ ")" "{" block "}"
-else: "else" "{" block "}"
+struct_cond: "if" "(" log_expr+ ")" "{" block "}" elif_* else_?
+elif_: "elif" "(" log_expr+ ")" "{" block "}"
+else_: "else" "{" block "}"
 
 increm_decrem: ID "++" | ID "--"
 
