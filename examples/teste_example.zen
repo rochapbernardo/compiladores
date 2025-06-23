@@ -1,4 +1,4 @@
-func main(){
+func main() -> void {
     verificarIdade(20)
 
     func verificarIdade(int idade) -> bool {

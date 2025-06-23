@@ -1,4 +1,4 @@
-func vetores(){
+func vetores() -> void {
     int[] quant_pessoas
     int[5] vagas 
     str[3] nomes = {"José", "João", "Maria"}
