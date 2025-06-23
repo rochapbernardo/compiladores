@@ -154,6 +154,9 @@ class CodeTranspiler(Interpreter):
         self.indent_level -= 1
         self._emit_code("}")
 
+    def struct_rep(self, tree):
+        """Visitor for the repetition structure wrapper rule (for, while)."""
+        self.visit_children(tree)
     def return_(self, tree):
         """Visitor for a return statement."""
         value = self.visit(tree.children[0])
