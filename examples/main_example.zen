@@ -2,20 +2,20 @@ func main(int a, float b)-> void {
   float y = 3.14
   str message = "Hello"
   bool test = true
-  bool test1 = true
+  bool test1 = false
   int[] quant_pessoas
   int[5] vagas 
   str[3] nomes = {"José", "João", "Maria"}
   int idade = 10
-  if (idade >= 18) {
-    return 1
+  if (idade != 18) {
+    return true
   } elif (idade >= 16) {
-      return 0
+      return false
   } else {
-      return 0
+      return false
   }
   for (int i = 0; i < 10; i++) {
-    x = x + i
+    int x = 1 + i
   }
   while (x < 5) {
     x = x + 1
