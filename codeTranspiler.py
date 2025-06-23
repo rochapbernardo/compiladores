@@ -6,7 +6,7 @@ from lark.visitors import Interpreter
 class CodeTranspiler(Interpreter):
     def __init__(self):
         super().__init__()
-        self.output = []
+        self.main = []
         self.imports = []
         self.indent_level = 0
 
@@ -331,9 +331,9 @@ class CodeTranspiler(Interpreter):
         """Appends transpiled code to self.output"""
         if indent:
             indent_str = "    " * self.indent_level
-            self.output.append(f"{indent_str}{line}")
+            self.main.append(f"{indent_str}{line}")
         else:
-            self.output.append(line)
+            self.main.append(line)
 
     def _emit_import(self, module: str) -> None:
         """Appends transpiled import statements to self.imports"""
@@ -356,4 +356,4 @@ class CodeTranspiler(Interpreter):
     def _transpile(self, ast):
         """Starts the transpilation process."""
         self.visit(ast)
-        return f"{'\n'.join(self.imports)}\n\n{'\n'.join(self.output)}"
+        return f"{'\n'.join(self.imports)}\n\n{'\n'.join(self.main)}"
