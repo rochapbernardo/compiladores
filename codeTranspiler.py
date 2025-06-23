@@ -325,7 +325,6 @@ class CodeTranspiler(Interpreter):
     # self.visit(ast) chama este método
     def program(self, tree) -> None:
         """Visitor for the top-level program rule."""
-        self._emit_import("stdio.h")
         self.visit_children(tree)
 
     def _emit_code(self, line, indent=True):
