@@ -25,9 +25,9 @@ return_: "return" log_expr
 declarations: variable | array
 
 struct: struct_cond | struct_rep
-struct_rep: for_ | while
+struct_rep: for_ | while_
 for_: "for" "(" variable ";" log_expr+ ";" (increm_decrem | expr) ")" "{" block "}"
-while: "while" "(" log_expr+ ")" "{" block "}"
+while_: "while" "(" log_expr+ ")" "{" block "}"
 struct_cond: "if" "(" log_expr+ ")" "{" block "}" elif_* else_?
 elif_: "elif" "(" log_expr+ ")" "{" block "}"
 else_: "else" "{" block "}"
