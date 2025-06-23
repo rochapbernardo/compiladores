@@ -262,6 +262,11 @@ class CodeTranspiler(Interpreter):
         else:
             self._emit_code(f"{c_type} {var_name};")
 
+    def parameters(self, tree):
+        """Visit each child node (which are expressions)"""
+        args = [self.visit(child) for child in tree.children]
+        return ", ".join(args)
+
     def parameter_def(self, tree):
         """Processes a single parameter definition (e.g., 'int a')."""
         c_type = self.visit(tree.children[0])
