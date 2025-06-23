@@ -7,6 +7,13 @@ pip install -r requirements.txt
 python main.py examples/main_example.zen --transpile --tree
 ```
 
+## Compilar e rodar o código C gerado:
+
+```sh
+gcc code.c -o code
+./code
+```
+
 # Divergências
 
 ## TreeIndenter
