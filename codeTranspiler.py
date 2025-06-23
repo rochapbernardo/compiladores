@@ -6,8 +6,10 @@ from lark.visitors import Interpreter
 class CodeTranspiler(Interpreter):
     def __init__(self):
         super().__init__()
-        self.main = []
         self.imports = []
+        self.functions = []
+        self.main_function = []
+        self.output_buffer = []
         self.indent_level = 0
 
     def __default__(self, tree):
@@ -298,25 +300,36 @@ class CodeTranspiler(Interpreter):
 
     def function(self, tree) -> None:
         """
-        Visitor for a function declaration.
-        Assumes a grammar rule like:
-        func_declaration: "func" CNAME "(" params? ")" "->" type block
+        Visitor for a function declaration. This now handles nested functions
+        by isolating the buffer AND indentation level for each function.
         """
+        is_main = tree.children[0].value == "main"
+        parent_buffer_backup = self.output_buffer
+        parent_indent_backup = self.indent_level
+        self.output_buffer = []
+        self.indent_level = 0
         token_function_name = tree.children[0]
         token_function_params = tree.children[1]
         token_function_return_type = tree.children[2]
         token_function_return_block = tree.children[3]
         return_type = self._map_type(token_function_return_type)
-        _signature = f"{'int' if return_type == 'void' else return_type} {token_function_name.value}"
+        if is_main:
+            return_type = "int"
+        _signature = f"{return_type} {token_function_name.value}"
         _params = f"({self.visit(token_function_params)})"
-
         self._emit_code(_signature + _params + " {")
         self.indent_level += 1
         self.visit(token_function_return_block)
-        if return_type == "void":
+        if is_main and return_type == "int":
             self._emit_code("return 0;")
         self.indent_level -= 1
-        self._emit_code("}")
+        self._emit_code("}\n")
+        if is_main:
+            self.main_function.extend(self.output_buffer)
+        else:
+            self.functions = self.output_buffer + self.functions
+        self.output_buffer = parent_buffer_backup
+        self.indent_level = parent_indent_backup
 
     def block(self, tree) -> None:
         """Visitor for a block of statements."""
@@ -329,12 +342,12 @@ class CodeTranspiler(Interpreter):
         self.visit_children(tree)
 
     def _emit_code(self, line, indent=True):
-        """Appends transpiled code to self.output"""
+        """Appends transpiled code to the current output buffer."""
         if indent:
             indent_str = "    " * self.indent_level
-            self.main.append(f"{indent_str}{line}")
+            self.output_buffer.append(f"{indent_str}{line}")
         else:
-            self.main.append(line)
+            self.output_buffer.append(line)
 
     def _emit_import(self, module: str) -> None:
         """Appends transpiled import statements to self.imports"""
@@ -355,10 +368,16 @@ class CodeTranspiler(Interpreter):
         return type_map.get(type_name, "/* unknown type */")
 
     def _transpile(self, ast):
-        """Starts the transpilation process."""
+        """Starts the transpilation process and assembles the final code."""
         self.visit(ast)
-        _imports = "\n".join(self.imports)
-        _main = "\n".join(self.main)
-        if len(self.imports) == 0:
-            return f"{_main}"
-        return f"{_imports}\n\n{_main}"
+        _imports = "\n".join(self.imports) + "\n"
+        _functions_str = "\n".join(self.functions)
+        _main_str = "\n".join(self.main_function)
+        final_code = []
+        if _imports:
+            final_code.append(_imports)
+        if _functions_str:
+            final_code.append(_functions_str)
+        if _main_str:
+            final_code.append(_main_str)
+        return "\n".join(final_code)
