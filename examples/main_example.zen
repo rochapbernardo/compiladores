@@ -7,6 +7,7 @@ func main(int a, float b)-> void {
   int[5] vagas 
   str[3] nomes = {"José", "João", "Maria"}
   int idade = 10
+  int x = 3
   if (idade != 18) {
     return true
   } elif (idade >= 16) {
