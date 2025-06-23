@@ -2,6 +2,9 @@ func main()-> void {
   func teste(int a) -> int {
     return a
   }
+  func teste2(int z) -> int {
+    return z
+  }
   float y = 3.14
   str message = "Hello"
   bool test = true
@@ -12,6 +15,7 @@ func main()-> void {
   int idade = 10
   int x = 3
   teste(1)
+  teste2(1)
   if (idade != 18) {
     return true
   } elif (idade >= 16) {
