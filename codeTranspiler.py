@@ -177,6 +177,23 @@ class CodeTranspiler(Interpreter):
     def struct_rep(self, tree):
         """Visitor for the repetition structure wrapper rule (for, while)."""
         self.visit_children(tree)
+
+    def for_(self, tree):
+        """Visitor for a C-style for loop."""
+        init_node = tree.children[0]
+        init_type = self.visit(init_node.children[0])
+        init_name = init_node.children[1].value
+        init_value = self.visit(init_node.children[2])
+        initialization = f"{init_type} {init_name} = {init_value}"
+        condition = self.visit(tree.children[1])
+        step = self.visit(tree.children[2])
+        block = tree.children[3]
+        self._emit_code(f"for ({initialization}; {condition}; {step}) {{")
+        self.indent_level += 1
+        self.visit(block)
+        self.indent_level -= 1
+        self._emit_code("}")
+
     def return_(self, tree):
         """Visitor for a return statement."""
         value = self.visit(tree.children[0])
