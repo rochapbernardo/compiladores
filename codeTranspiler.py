@@ -309,6 +309,7 @@ class CodeTranspiler(Interpreter):
         return_type = self._map_type(token_function_return_type)
         _signature = f"{'int' if return_type == 'void' else return_type} {token_function_name.value}"
         _params = f"({self.visit(token_function_params)})"
+
         self._emit_code(_signature + _params + " {")
         self.indent_level += 1
         self.visit(token_function_return_block)
