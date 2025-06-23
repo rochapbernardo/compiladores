@@ -288,6 +288,14 @@ class CodeTranspiler(Interpreter):
         """Visitor for the 'declarations' rule."""
         self.visit_children(tree)
 
+    def function_call(self, tree):
+        """Visitor for a function call statement."""
+        function_name = tree.children[0].value
+        param_str = ""
+        if len(tree.children) > 1:
+            param_str = self.visit(tree.children[1])
+        self._emit_code(f"{function_name}({param_str});")
+
     def function(self, tree) -> None:
         """
         Visitor for a function declaration.
