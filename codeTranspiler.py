@@ -87,6 +87,10 @@ class CodeTranspiler(Interpreter):
         literal_token = tree.children[0]
         return literal_token.value
 
+    def structures(self, tree):
+        """Visitor for the 'structures' wrapper rule."""
+        self.visit_children(tree)
+
     def array_list(self, tree):
         """
         Processes a list of literals for array initialization.
