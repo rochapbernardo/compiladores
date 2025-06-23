@@ -91,6 +91,55 @@ class CodeTranspiler(Interpreter):
         """Visitor for the 'structures' wrapper rule."""
         self.visit_children(tree)
 
+    def struct(self, tree):
+        """Visitor for the 'struct' wrapper rule."""
+        self.visit_children(tree)
+
+    def struct_cond(self, tree):
+        """
+        Visitor for a full if-elif-else conditional structure.
+        This method handles the entire chain to get the C-style formatting correct.
+        """
+        if_condition = self.visit(tree.children[0])
+        if_block = tree.children[1]
+        self._emit_code(f"if ({if_condition}) {{")
+        self.indent_level += 1
+        self.visit(if_block)
+        self.indent_level -= 1
+        remaining_clauses = tree.children[2:]
+        for clause in remaining_clauses:
+            if clause.data == "elif_":
+                elif_condition = self.visit(clause.children[0])
+                elif_block = clause.children[1]
+                self._emit_code(f"}} else if ({elif_condition}) {{")
+                self.indent_level += 1
+                self.visit(elif_block)
+                self.indent_level -= 1
+            elif clause.data == "else_":
+                else_block = clause.children[0]
+                self._emit_code("} else {")
+                self.indent_level += 1
+                self.visit(else_block)
+                self.indent_level -= 1
+        self._emit_code("}")
+
+    def elif_(self, tree):
+        """Visitor for the 'elif' rule, which becomes 'else if' in C."""
+        condition = self.visit(tree.children[0])
+        self._emit_code(f"else if ({condition}) {{")
+        self.indent_level += 1
+        self.visit(tree.children[1])
+        self.indent_level -= 1
+        self._emit_code("}")
+
+    def else_(self, tree):
+        """Visitor for the 'else' rule."""
+        self._emit_code("else {")
+        self.indent_level += 1
+        self.visit(tree.children[0])
+        self.indent_level -= 1
+        self._emit_code("}")
+
     def array_list(self, tree):
         """
         Processes a list of literals for array initialization.
