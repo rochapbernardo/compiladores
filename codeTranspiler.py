@@ -140,6 +140,11 @@ class CodeTranspiler(Interpreter):
         self.indent_level -= 1
         self._emit_code("}")
 
+    def return_(self, tree):
+        """Visitor for a return statement."""
+        value = self.visit(tree.children[0])
+        self._emit_code(f"return {value};")
+
     def array_list(self, tree):
         """
         Processes a list of literals for array initialization.
