@@ -93,7 +93,7 @@ int main() {
 }
 ``` 
 
-# Divergências
+# Alterações
 
 ## TreeIndenter
 
