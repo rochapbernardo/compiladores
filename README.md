@@ -4,7 +4,7 @@
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-python main.py examples/main_example.zen --transpile --tree
+python main.py tests/main.zen --transpile --tree
 ```
 
 ## Compilar e rodar o código C gerado:
