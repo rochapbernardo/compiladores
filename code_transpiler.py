@@ -376,9 +376,9 @@ class CodeTranspiler(Interpreter):
         _functions_str = "\n".join(self.functions)
         _main_str = "\n".join(self.main_function)
         final_code = []
-        if _imports:
+        if self.imports:
             final_code.append(_imports)
-        if _functions_str:
+        if self.functions:
             final_code.append(_functions_str)
         if _main_str:
             final_code.append(_main_str)
