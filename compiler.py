@@ -3,7 +3,7 @@ from typing import List
 from lark import Lark, tree
 from lark.indenter import Indenter
 
-from codeTranspiler import CodeTranspiler
+from code_transpiler import CodeTranspiler
 
 
 # classe para fazer a identacao e quebra de linha do codigo grammar.lark
@@ -62,4 +62,3 @@ class Compiler:
         # gravar o codigo C em um arquivo
         with open(c_path, "w") as c_file:
             c_file.write(transpiled_code)
-

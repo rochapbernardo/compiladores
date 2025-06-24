@@ -209,6 +209,8 @@ class CodeTranspiler(Interpreter):
     def return_(self, tree):
         """Visitor for a return statement."""
         value = self.visit(tree.children[0])
+        if value in ["0", "1", "true", "false"]:
+            self._emit_import("stdbool.h")
         self._emit_code(f"return {value};")
 
     def array_list(self, tree):
