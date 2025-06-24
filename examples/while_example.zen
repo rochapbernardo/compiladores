@@ -1,5 +1,0 @@
-func testeWhile() -> void {
-    while (x < 5) {
-        x = x + 1
-    }
-}

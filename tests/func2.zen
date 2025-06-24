@@ -1,0 +1,5 @@
+func main() -> void {
+  func increment(int a) -> void {
+    a = a + 1
+  }
+}
